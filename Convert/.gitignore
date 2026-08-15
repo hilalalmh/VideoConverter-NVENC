@@ -1,0 +1,11 @@
+convert/
+__pycache__/
+*.pyc
+*.mp4
+*.mkv
+*.avi
+*.mov
+*.wmv
+*.flv
+*.webm
+*.ts
