@@ -1,14 +1,14 @@
 # VideoConverter-NVENC
 
-Batch video converter berbasis Python dan FFmpeg dengan akselerasi GPU NVIDIA NVENC. Project ini dirancang untuk mengonversi berbagai format video ke MP4 secara otomatis dengan memanfaatkan hardware encoding pada GPU NVIDIA.
+A Python and FFmpeg based batch video converter with NVIDIA NVENC GPU acceleration. This project automatically converts various video formats to MP4 using hardware encoding on NVIDIA GPUs.
 
 ## ✨ Features
 
-* 🎬 Convert video ke format MP4 secara otomatis
+* 🎬 Automatically convert videos to MP4
 * 🚀 NVIDIA NVENC hardware encoding
-* ⚡ Mendukung multiple conversion secara paralel
-* 🖥️ GPU decoding menggunakan CUDA
-* 🎞️ Mendukung berbagai format:
+* ⚡ Parallel conversion support
+* 🖥️ GPU decoding using CUDA
+* 🎞️ Support for multiple formats:
 
   * MKV
   * AVI
@@ -17,31 +17,37 @@ Batch video converter berbasis Python dan FFmpeg dengan akselerasi GPU NVIDIA NV
   * FLV
   * WEBM
   * TS
-* 🔊 Audio dikonversi ke AAC 192 kbps
-* 📺 Video menggunakan H.264
-* 💾 Menggunakan output `yuv420p` untuk kompatibilitas luas
-* ⏩ Otomatis melewati file yang sudah dikonversi
-* 📊 Progress bar menggunakan `tqdm`
-* 📁 Hasil konversi disimpan otomatis ke folder `convert`
+* 🔊 Audio converted to AAC 192 kbps (choose: all tracks or first track only)
+* 📺 Video encoded with H.264
+* 💾 `yuv420p` output for broad compatibility
+* ⏩ Skips already converted files
+* 📊 Progress bar powered by `tqdm`
+* 📁 Results saved automatically to the `convert` folder
+* 💬 Subtitles preserved (converted to `mov_text`)
+* 📑 Chapters preserved
+* 🔒 Safe output writing: encodes to a `.part` file, then renames on success
+* 📝 Error log saved to a `*.error.txt` file on failed conversion
+* 🧵 Parallel conversion using threads (lightweight, no extra Python processes)
+* 📂 Optional recursive scan for subfolders (config)
 
 ## 🛠️ Requirements
 
 ### Software
 
-* Python 3.9 atau lebih baru
+* Python 3.9 or newer
 * FFmpeg
-* NVIDIA GPU dengan dukungan NVENC
-* NVIDIA Driver terbaru
+* NVIDIA GPU with NVENC support
+* Up-to-date NVIDIA Driver
 
 ### Python Package
 
-Install dependency dengan:
+Install the dependency with:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Atau:
+Or:
 
 ```bash
 pip install tqdm
@@ -49,39 +55,39 @@ pip install tqdm
 
 ## 🎮 NVIDIA GPU
 
-Project ini menggunakan:
+This project uses:
 
 ```text
 h264_nvenc
 ```
 
-sebagai hardware encoder NVIDIA.
+as the NVIDIA hardware encoder.
 
-GPU NVIDIA yang mendukung NVENC dapat digunakan. Performa dan jumlah proses paralel yang optimal bergantung pada GPU yang digunakan.
+Any NVIDIA GPU with NVENC support can be used. Optimal performance and the number of parallel processes depend on the GPU.
 
-Contoh konfigurasi:
+Example configuration:
 
 ```python
 MAX_WORKERS = 2
 ```
 
-Untuk GPU kelas entry-level seperti GTX 1650 Ti, dua proses paralel dapat digunakan sebagai titik awal.
+For entry-level GPUs such as the GTX 1650 Ti, two parallel processes are a good starting point.
 
 ## 📦 Installation
 
-### 1. Clone repository
+### 1. Clone the repository
 
 ```bash
-git clone https://github.com/hilalalhm/VideoConverter-NVENC.git
+git clone https://github.com/hilalalmh/VideoConverter-NVENC.git
 ```
 
-Masuk ke folder:
+Enter the folder:
 
 ```bash
 cd VideoConverter-NVENC
 ```
 
-### 2. Install Python dependency
+### 2. Install the Python dependency
 
 ```bash
 pip install -r requirements.txt
@@ -89,19 +95,19 @@ pip install -r requirements.txt
 
 ### 3. Install FFmpeg
 
-Pastikan FFmpeg sudah terinstall dan dapat dipanggil melalui terminal:
+Make sure FFmpeg is installed and callable from the terminal:
 
 ```bash
 ffmpeg -version
 ```
 
-Jika command tersebut menampilkan informasi versi FFmpeg, berarti FFmpeg sudah siap digunakan.
+If the command prints the FFmpeg version info, FFmpeg is ready to use.
 
 ## 🚀 Usage
 
-Letakkan file video yang ingin dikonversi di folder yang sama dengan script.
+Place the video files you want to convert in the same folder as the script.
 
-Contoh:
+Example:
 
 ```text
 VideoConverter-NVENC/
@@ -113,19 +119,19 @@ VideoConverter-NVENC/
 └── video3.ts
 ```
 
-Jalankan:
+Run:
 
 ```bash
 python convert.py
 ```
 
-Program akan membuat folder:
+The program will create a folder:
 
 ```text
 convert/
 ```
 
-dan menyimpan hasil konversi di dalamnya:
+and store the converted files there:
 
 ```text
 VideoConverter-NVENC/
@@ -139,7 +145,7 @@ VideoConverter-NVENC/
 
 ## ⚙️ Encoding Configuration
 
-Konfigurasi utama menggunakan:
+Main encoding settings:
 
 ```text
 Codec       : H.264 NVENC
@@ -148,29 +154,31 @@ Rate Control: VBR
 CQ          : 19
 Pixel Format: YUV420P
 Audio       : AAC 192 kbps
+Subtitle    : MOV_TEXT (when KEEP_SUBTITLES = True)
+Chapter     : Preserved (when KEEP_CHAPTERS = True)
 Fast Start  : Enabled
 ```
 
-Parameter kualitas dapat disesuaikan melalui:
+Quality can be adjusted through:
 
 ```python
 "-cq", "19",
 ```
 
-Secara umum:
+In general:
 
-| CQ | Kualitas      | Ukuran      |
-| -: | ------------- | ----------- |
-| 17 | Sangat tinggi | Besar       |
-| 19 | Tinggi        | Sedang      |
-| 21 | Baik          | Lebih kecil |
-| 23 | Cukup baik    | Kecil       |
+| CQ | Quality        | Size       |
+| -: | -------------- | ---------- |
+| 17 | Very high      | Large      |
+| 19 | High           | Medium     |
+| 21 | Good           | Smaller    |
+| 23 | Fairly good    | Small      |
 
-Semakin kecil nilai CQ, semakin tinggi kualitas dan biasanya semakin besar ukuran file.
+The lower the CQ value, the higher the quality and usually the larger the file size.
 
 ## 📂 Supported Input Formats
 
-Saat ini format yang didukung:
+Supported input formats:
 
 ```text
 .mkv
@@ -190,83 +198,126 @@ Output:
 
 ## 🔧 Customization
 
-Jumlah proses paralel dapat diubah melalui:
+All settings are available in the `CONFIG` section of `convert.py`:
 
 ```python
-MAX_WORKERS = 2
+MAX_WORKERS     = 2          # Number of parallel conversions (ffmpeg)
+KEEP_SUBTITLES  = True       # Preserve subtitles (False to discard)
+KEEP_CHAPTERS   = True       # Preserve chapters
+MAP_ALL_AUDIO   = True       # True = all audio tracks, False = first track only
+SCAN_RECURSIVE  = False      # True = also scan videos in subfolders
 ```
 
-Contoh:
+### MAX_WORKERS
+
+Example:
 
 ```python
 MAX_WORKERS = 1
 ```
 
-untuk menjalankan satu proses FFmpeg pada satu waktu.
+runs a single FFmpeg process at a time.
 
-Atau:
+Or:
 
 ```python
 MAX_WORKERS = 2
 ```
 
-untuk menjalankan dua proses secara paralel.
+runs two processes in parallel.
 
-Jumlah worker yang optimal bergantung pada kemampuan GPU, CPU, VRAM, dan jenis video yang dikonversi.
+The optimal number of workers depends on the GPU, CPU, VRAM, and the type of videos being converted.
+
+### SCAN_RECURSIVE
+
+```text
+False → only video files in the script's main folder
+True  → video files in the main folder + all subfolders
+```
+
+The `convert/` folder is always skipped, both in normal and recursive mode.
+
+### MAP_ALL_AUDIO
+
+```text
+True  → all audio tracks are converted to AAC 192 kbps
+False → only the first audio track is converted
+```
+
+### KEEP_SUBTITLES
+
+When `True`, text subtitles (SRT/ASS) are converted to `mov_text` for MP4 compatibility.
+
+> **Note:** bitmap subtitles (PGS/DVD) cannot be converted to `mov_text`. If a video contains bitmap subtitles, set `KEEP_SUBTITLES = False` to avoid conversion failure.
 
 ## ⚠️ Troubleshooting
 
-### FFmpeg tidak ditemukan
+### FFmpeg not found
 
-Jika muncul error seperti:
+The script checks for FFmpeg at startup and stops with:
 
 ```text
-'ffmpeg' is not recognized as an internal or external command
+[ERROR] ffmpeg tidak ditemukan. Pastikan ffmpeg tersedia di PATH.
 ```
 
-pastikan FFmpeg sudah terinstall dan folder `bin` FFmpeg sudah ditambahkan ke Windows PATH.
+If you see this message, make sure FFmpeg is installed and its `bin` folder is added to the Windows PATH.
 
-Tes dengan:
+Test with:
 
 ```bash
 ffmpeg -version
 ```
 
-### NVIDIA NVENC tidak tersedia
+### NVIDIA NVENC unavailable
 
-Tes encoder dengan:
+Test the encoder with:
 
 ```bash
 ffmpeg -encoders | findstr nvenc
 ```
 
-Jika tersedia, biasanya akan muncul:
+If available, output normally includes:
 
 ```text
 h264_nvenc
 hevc_nvenc
 ```
 
-Pastikan NVIDIA Driver sudah terinstall dengan benar.
+Make sure the NVIDIA Driver is installed correctly.
 
-### Video gagal dikonversi
+### Video failed to convert
 
-Beberapa video dapat gagal dikonversi karena:
+On failure, the script writes a log file next to the output:
 
-* File rusak
-* Codec tidak kompatibel
-* Timestamp bermasalah
-* Stream video tidak valid
-* Audio bermasalah
-* File memiliki struktur container yang tidak standar
+```text
+name.mp4.error.txt
+```
 
-Coba jalankan FFmpeg secara manual untuk melihat pesan error secara lengkap.
+The log contains the full FFmpeg error output.
+
+Some videos may fail to convert because of:
+
+* Corrupted files
+* Incompatible codecs
+* Broken timestamps
+* Invalid video streams
+* Problematic audio
+* Bitmap subtitles (PGS/DVD) — see the `KEEP_SUBTITLES` section
+* Non-standard container structure
+
+Run FFmpeg manually to get the full error message.
+
+### Conversion timeout
+
+Each FFmpeg process has a 2-hour (7200 seconds) limit.
+
+If a video takes longer or FFmpeg hangs, the process is cancelled and the incomplete `.part` file is cleaned up automatically.
 
 ## 📜 License
 
-Project ini dibuat untuk penggunaan pribadi, pembelajaran, dan pengembangan lebih lanjut.
+This project is made for personal use, learning, and further development.
 
-Silakan modifikasi dan kembangkan sesuai kebutuhan.
+Feel free to modify and improve it as needed.
 
 ---
 
@@ -279,4 +330,4 @@ https://github.com/hilalalhm
 
 ## ⭐ Support
 
-Jika project ini bermanfaat, jangan lupa memberikan ⭐ pada repository.
+If you find this project useful, don't forget to give it a ⭐ on the repository.
